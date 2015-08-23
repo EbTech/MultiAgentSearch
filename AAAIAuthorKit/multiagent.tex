@@ -1,0 +1,302 @@
+%File: formatting-instruction.tex
+\documentclass[letterpaper]{article}
+% AAAI format packages
+\usepackage{aaai}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+% Additional packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{comment}
+\newtheorem{defn}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{cor}{Corollary}
+\newtheorem{rul}{Expansion Rule}
+% END Additional packages
+\frenchspacing
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+\pdfinfo{
+/Title (Multi-Agent Path Planning with Constraints on Visitation Order)
+%/Author (Aram Ebtekar, Mike Phillips, Sven Koenig, Maxim Likhachev)
+/Keywords (weighted A* search, parallel algorithm, heuristic)
+}
+\setcounter{secnumdepth}{0}  
+ \begin{document}
+% The file aaai.sty is the style file for AAAI Press 
+% proceedings, working notes, and technical reports.
+%
+\title{Multi-Agent Path Planning with Constraints on Visitation Order}
+\author{Aram Ebtekar$^\dagger$ \and Mike Phillips$^\dagger$ \and Sven Koenig\thanks{University of Southern California, Los Angeles, CA 90089} \and Maxim Likhachev% <-this % stops a space
+\thanks{Carnegie Mellon University, Pittsburgh, PA 15217}% <-this % stops a space
+%
+}
+\author{AAAI 2015 Submission 2327}% anonymizer
+\maketitle
+\begin{abstract}
+\begin{quote}
+We consider path planning problems with multiple cooperating agents, each with its own start and goal position, the optimization target being the last time of arrival. The agents are coupled together by constraints on the order in which certain regions are visited. Such constraints can encode constructive interactions, such as when agents need to complete actions like opening doors for one another, as well as destructive interactions, where one action precludes another thereafter. We show how this class of constraints can describe a variety of practical domains in maintenance, surveillance, and assembly. Next we show that, unlike classical graph search, visitation order constrained planning is NP-hard, regardless of approximation factor. Nonetheless, we present a planner SeqA* which guarantees completeness with an approximation factor equal to the number of agents. Its performance is optimized using a trie-like data structure. Finally, we evaluate the planner's performance experimentally.
+\end{quote}
+\end{abstract}
+
+\section{Introduction}
+
+The simplest motion planning domains, where the only state is an agent's position, reduce to explicit shortest-paths problems on graphs. On the other hand, high-level domain representations such as STRIPS lead to exponential-size graphs, which are NP-hard in general and demand different techniques to incorporate the high-level information encoding the graph's structure. Here we are interested in a middle ground, often occupied by multi-task and/or cooperative multi-agent planning problems. The agents still move between locations on an explicit graph, but some aspect of their history is relevant toward determining which future moves are allowed. If multiple agents plan jointly, they may help or hinder one another.
+
+A simple and natural example is that of robot A pressing a switch that opens a door which robot B must pass through. In this example, imagine either that robot B is incapable of pressing the switch due to physical limitations, or that the switch happens to lie conveniently on robot A's path so that the collaboration results in faster plan execution. Thus, the $N$-agent problem cannot simply be solved by $N$ independent planners running in parallel. Nor would be want to search with a single planner over the joint state space of all $N$ agents, as that would result in exponential blowup even when there is a small constant number of constraints. However, once the number of constraints grows, exponential blowup seems unavoidable in the worst case, as we will show that even obtaining a bounded suboptimal solution is NP-hard.
+
+Nonetheless, our algorithm SeqA* easily handles small instances, and is also efficient on a class of instances where it is clear from the graph topology that the constraints can only interact in a few specific orders. If the number of constraints is constant, it runs in time polynomial in the number of agents (not quite, TODO).
+
+\section{Related Works (still kind of sloppy, revise)}
+
+Multi-agent planning is a growing field of research, as the emergent complexity of multi-agent systems raises the need for more advanced AI in both cooperative and competitive applications \cite{van2008multi}. Previous approaches for combining multiple individual plans into one consistent multi-agent plan include \cite{georgeff1988communication} and \cite{de2005multi}. Our approach is different in that, by restricting the allowable constraints to a set that we very often find in practice, we are able to use simpler graph search methods in place of logical methods or complex representations such as STRIPS.
+
+We take the well-studied A* planning method \cite{hart1968formal}, and extend it to multi-agent systems which interact via a set of constraints. To our knowledge, the particular class of constraints we consider is new to the field of multi-agent path planning. It is essentially a very restricted subset of temporal logic \cite{gabbay1994temporal} in which every variable is monotonic: either constant, starts false and at some point shifts to becoming true thereafter, or starts true and shifts to becoming false.
+
+Different constraint formulations have been explored in the context of multi-agent planning. CBS, MA* and variants \cite{ferner2013odrm}\cite{sharon2015conflict}  adapt the dimensionality of the search to depend only on the number of agents which are actually in conflict. Our approach, in constrast, does all the low-level planning independently, but at the cost of a recombination step to merge the resulting plans. Perhaps the closest prior domain to ours is one on which the DPC algorithm \cite{bhattacharya2010multi} was applied. Here, multiple tasks need to be distributed among robots with time-parametrized constraints on their maximum distance. Our ordering constraints generalize the task distribution problem, but on the other hand we drop the distance constraints, lending our problem to more discrete methods.
+
+\section{Problem Formulation}
+
+A visitation order (VO)-constrained planning problem with $N$ agents and $K$ constraints is formulated in terms of $N$ weighted directed graphs $\{V_i,E_i,start_i,goal_i\}_{i=1}^N$ and $K$ \textbf{VO constraints} $\{\Phi_i\}_{i=1}^K$. The vertex set $V_i$ contains the discrete positions accessible to agent $i$, including the special start and end positions $start_i,goal_i\in V_i$. Each edge $(u,v,w)\in E_i \subset V_i\times V_i\times [0,\infty)$ connects $u$ to $v$ and takes $w$ time units to traverse. When such an edge exists, we may abuse notation and write $c(u,v) = w$. Otherwise, $c(u,v) = \infty$. We say the problem is \textbf{undirected} if $c(u,v) = c(v,u)$ for all $u,v$. Otherwise, it is \textbf{directed}.
+
+A \textbf{plan} for agent $i$ is a sequence $\pi_i = \langle (v_0,t_0),(v_1,t_1),\ldots,(v_{m_i},t_{m_i}) \rangle$ such that $v_0 = start_i$, $t_0 \ge 0$, $v_{m_i} = goal_i$, and for all $j$: $v_j \in V_i$ and $t_{j} \ge t_{j-1} + c(v_{j-1},v_j)$. We say that $\pi_i$ \textbf{visits} $v_j$ at \textbf{time} $t_j$. An assignment of plans $\{\pi_i\}_{i=1}^N$ to all $N$ agents is called a \textbf{joint plan}, and is \textbf{valid} if it \textbf{satisfies} all $K$ of the VO constraints. The $\textbf{cost}$ of a joint plan is the maximum arrival time $\max_{i=1}^N t_{m_i}$. A planner's objective is to compute a valid joint plan of low cost. If the cost is at most $\epsilon \ge 1$ times that of a minimum-cost valid joint plan, then we say the computed plan is $\epsilon$-optimal.
+
+A VO constraint $\Phi = \langle\Phi^-,\Phi^+,type\rangle$ is described by two vertex sets $\Phi^-,\Phi^+\subset \cup_i V_i$, along with a \textbf{constraint type} describing the relationship $\Phi$ imposes on the relative visit times of $\Phi^-$ and $\Phi^+$. To understand the constraint types, fix a joint plan $\{\pi_i\}_{i=1}^N$. For any vertex set $S \subset \cup_i V_i$, let $t_{min}(S)$ and $t_{max}(S)$ denote the smallest and largest time at which some $\pi_i$ visits some vertex in $S$. The four constraint types are defined by the following inequalities:
+
+\begin{itemize}
+\item O (open) constraint: $t_{\min}(\Phi^-) \le t_{\min}(\Phi^+)$
+\item C (close) constraint: $t_{\max}(\Phi^-) \le t_{\min}(\Phi^+)$
+\item R (restore) constraint: $t_{\max}(\Phi^-) \le t_{\max}(\Phi^+)$
+\item S (sequence) constraint: $t_{\min}(\Phi^-) \le t_{\max}(\Phi^+)$
+\end{itemize}
+
+When the corresponding inequality is met, we say that $\{\pi_i\}_{i=1}^N$ satisfies $\Phi$. Intuitively, an O constraint corresponds to a set of doors $\Phi^+$, which start closed but can be permanently opened by triggering any one of the switches in $\Phi^-$. In a C constraint, it is the $\Phi^-$ vertices which should be thought of as doors, which are open until permanently barred shut by triggering a switch in $\Phi^+$. In an R constraint, visiting $\Phi^-$ is like using an appliance; after the final use, $\Phi^+$ must be visited at least once in order to ``clean up". Finally, the S constraint simply dictates that some instance of $\Phi^-$ take place before some instance of $\Phi^+$.
+
+Notice that if neither of $\Phi^+,\Phi^-$ are ever visited, then by the usual definition of $\min,\max$ of empty sets as $\infty, -\infty$ respectively, $\Phi$ is satisfied iff it is not of type S. To prevent any ambiguities, we further require that $\Phi_i^+ \cap \Phi_j^- = \emptyset$ for all $i,j = 1,\ldots,K$. That is, each vertex may appear on the left-hand or right-hand side of several constraint inequalities, but not both.
+
+
+\begin{thm} Suppose all constraints are of type O or C. Then given an individual plan for each of the $N$ agents, an optimal join plan consistent with the individual plans can be found, if it exists, by greedily moving the agents forward in parallel along their respective plans, pausing when necessary to respect a constraint.
+\end{thm}
+
+\begin{cor}
+Suppose all constraints are of type C or R. Then an optimal consistent joint plan can be found, if it exists, by applying the greedy algorithm backwards in time starting from the goals.
+\end{cor}
+
+\begin{thm} A multi-agent planning problem involving O, C, R and S constraints can be reduced to one involving only O and C constraints, such that every plan in one problem can be efficiently transformed into an equal-cost path in the other.
+\end{thm}
+
+\begin{proof}
+Sketch (rewrite later): Representing R contraints in terms of Os and Cs: suppose B restores (i.e. cleans after) A. Then create a copy B' of B. Let B' close A, and B' open any agent's goal node. To deal with the boundary condition where neither A nor B are visited, the start node should have a similar copy, reachable at zero cost.
+
+Representing S contraints in terms of Os: suppose (A, B) are a mandated sequence. Then create a copy B' of B. Let A open B', and B' open any agent's goal node.
+\end{proof}
+
+Since R and S constraints can be represented in terms of O and C, we consider the former as the only types without loss of generality. This allows us to use the greedy algorithm according to Theorem [X].
+
+\section{Example Applications}
+
+In distributed assembly, it is often necessary for one agent to complete its task before another agent can begin the next step. This is easily encoded by a type O constraint. In maintenance, a type R constraint can indicate that certain restoration tasks must follow equipment use in order to return everything to its original state.
+
+Finally, some interesting encodings are possible in security and surveillance. If, say, $k$ agents must scan the same object, this can be encoded by giving each agent $k$ copies of the vertex where the scanning takes place, each opening one of $k$ O doors blocking the goal. Taking one of the copies blocks the agent' s remaining $k-1$ copies using an O constraint, thus preventing the same agent from being counted twice. We can also require, for instance, that one agent of each type scan the item, by simply giving different agents control over different ``doors".
+
+\section{Hardness Results}
+
+In unconstrainted single-agent graph planning, the main difficulty stems from the graph being extremely large, often too large even to store in memory. If the graph were reasonably compact, say with only a million edges, then Dijkstra's algorithm finds the optimal path very efficiently. We might hope that something similar is true in the presence of VO constraints. However, we show here that unless P = NP, the complexity of VO-constrained planning is superpolynomial in $K$, the number of constraints. This is the case even if there is only one agent, unit edge costs, and we allow an arbitrarily large constant approximation factor. Thus, we may only hope to solve instances with few constraints in the worst case, and more complex instances if we are able to use the structure of realistic problem instances in a particular domain.
+
+\begin{thm}
+Determining the existence of a VO-constrained plan is NP-complete, even in the restricted case where there is only one agent and at most one of the following conditions holds:
+\begin{itemize}
+\item All constraints have type O.
+\item The graph is undirected.
+\end{itemize}
+\end{thm}
+
+\begin{proof}
+Sketch (rewrite later):
+Let's say there are $m$ clauses and the variables are $x_1,x_2,\ldots,x_n$. Draw the edges $(start_1,x_1),\;(start_1,\neg x_1),\;(x_i,x_{i+1}),\;(x_i,\neg x_{i+1}),\;\\(\neg x_i,x_{i+1}),\;(\neg x_i,\neg x_{i+1}),\;(x_n,goal_1),\;(\neg x_n,\neg goal_1)$. For the other agent, draw the edges $(start_2,c_0),\;(c_{i-1},req_{i,j}),\;(req_{i,j},c_i),\;(c_m,goal_2)$. Here, $req_{i,j}$ is a door that needs to be opened by the node corresponding to the $j$'th variable of the $i$'th clause.
+\end{proof}
+
+On the other hand, if both constraints hold, then we are left with a generalization of the Metric Traveling Salesman Problem. Since the latter admits constant-factor approximations in polynomial time \cite{christofides1976worst}, we might expect the same to hold here. However, the following theorem trashes such hopes.
+
+\begin{thm}
+Fix $\alpha < 1$. It is NP-hard to find an $\alpha ln(K)$-optimal VO-constrained plan, even when ALL of the following conditions hold:
+\begin{itemize}
+\item There is only $N=1$ agent.
+\item All edges have zero or unit cost.
+\item All constraints have type O.
+\item The graph is undirected.
+\item $|\Phi_i^+| = |\Phi_i^-| = 1$ for all $i$.
+\item Each vertex appears in at most one constraint.
+\end{itemize}
+\end{thm}
+
+\begin{proof}
+This follows from the inapproximability of SUBSET-SUM \cite{moshkovitz2012projection}. To reduce from SUBSET-SUM, let the $i$'th subset be $\{a_{ij}\}_j$. For this subset, form a connected component of zero-cost edges, containing triggers for the doors labeled by $\{a_{ij}\}_j$. The goal is reachable from the start by following a path of zero-cost edges, along which all these doors are blocking the way. Allow this path to branch whenever there are multiple copies of the same door. Finally, connect the start to each of the connected components by a unit-cost edge.
+\end{proof}
+
+\section{Approach}
+
+Part of the difficulty in planning with these temporal constraints is that the set of available actions does not depend solely on the current position: it also depends on past positions visited by the agent and its collaborators. Perhaps the most obvious approach, then, is to plan over the joint state space. That is, do an A* search over the graph whose vertices correspond to $N$-tuples as well as a history bitmask documenting which of the sets $\Phi^\pm$ have been visited. If we search about $V$ positions per agent, and there are $K$ constraints, then naively this corresponds to a complexity of about $V^N4^K$, or $V^N2^K$ once we notice that only $\Phi^-$ visits need be remembered for O constraints and $\Phi^+$ visits for C constraints. Due to the above hardness results, we are willing to tolerate the $2^K$ term in hopes of $K$ being small. However, $V^N$ is certainly not acceptable! While we don't expect such a planner to fully explore the Cartesian product of all the agents' configuration spaces, this still allows far too much repeat work on each individual agent's states.
+
+Another rather naive approach would be to greedily flood-fill positions which are not occuped by any C constraints, since O's correspond to doors which start closed, and opening them can never hurt completeness. While this deals with O's with low computational effort, the resulting paths may do substantial wasted work, and so we any semblance of an A* optimality guarantee. Indeed, Theorem [X] shows that we cannot hope for a reasonable suboptimality bound from an efficient greedy approach. Worse, C's cannot be processed greedily. We could choose to close a door or not, nondeterministically, i.e. try one approach, recurse, and then backtrack if it fails. Or we could branch in such cases, exploring both possibilities in a manner that trades dynamically between breadth and depth like A*. If we also treat the O's this way in place of the greedy approach, a bounded suboptimal algorithm starts to take form.
+
+Therefore, we opt for an approach where each agent runs an independent planner, and then the results are joined according to Theorem [X]. Since individual plans may have to be interleaved in unpredictable ways, we save not only a bitmask but a sequence documenting the order in which constraints were triggered en route to the state under consideration. Indeed, we plan over a new notion of ``state" which contains both a position and a sequence encoding the relevant history. The complexity of this representation is $K!N$ per agent, or $K!VN$ overall. Since $VN$ is the total size of the configuration spaces, this is essentially linear when the number of constraints is sufficiently small. For convenient, we search backward from the goal. Thus, every time agent $i$'s planner expands a state $(pos, hist)$ such that $pos = start_i$, the corresponding path is compared with paths from the other agents in the greedy manner described above. Unfortunately, this does present a bottleneck in that we're potentially trying up to $(K!)^N$ path tuples, where each agent may try any sequence of constraints.
+
+\section{Analysis (needs rewriting)}
+
+$g_{s_1,\ldots,s_N}(s_i)$ is the minimum time by which agent $i$ can reach state $s_i$, assuming every agent $j$ will go to $s_j$ along some known path (following $bp(s_j)$, say) and wait there forever. Note that the state space for each agent is the Cartesian product of its graph's vertex set, and the set of partial permutations of constraints.
+
+Define $f(s_1,\ldots,s_N) = \max_i g_{s_1,\ldots,s_N}(s_i) + \epsilon h(s_i)$. This key is impractical to compute over all possible tuples. Further approximations will need to be made. Note that $(s_1,\ldots,s_N)$ range over the goal nodes as well as the $OPEN$ list.
+
+Even if we could compute $f$, does it guarantee $N\epsilon$ optimality? To prove that, it would suffice to show that we only expand nodes whose individual-agent $g$-values are $\epsilon$-optimal. However, the logic fails because passing through a door-opening node can result in a sudden drastic decrease in the $g_{s_1,\ldots,s_N}$ value, due to constraints being lifted. To remedy this, instead of defining $g$ by ``wait-forever" semantics, we could treat doors as being opened after the partial paths to $(s_1,\ldots,s_N)$, at some lower bound time.
+
+A lower-bound for $f(s_1,\ldots,s_n)$ could be computed as $f(s_j)$ by building a coarse search tree at the level of constraint sequences, where a macro-expansion consists of searching toward each possible next constraint node.
+
+Want to prove that $g(s)$ is $\epsilon$-optimal at expansion (when its jointPriority value is minimal), and thus the joint paths are $N\epsilon$ optimal. Suppose $g(s) > \epsilon g^*(s)$. As induction hypothesis, let $s'\in OPEN$ be such that $g(s') \le \epsilon g^*(s')$. Fix a priority-minimizing tuple $(s_1,\ldots,s,\ldots,s_n)$ for $s$. Now consider the tuple $(s_1,\ldots,s',\ldots,s_n)$. If its priority were less, it would follow that $s'$ will be expanded before $s$. But, path to $s$ might open doors much sooner than path to $s'$!
+
+Pending further insights, it seems the state is forced to remember sequences of contrained nodes instead of merely sequences of constraints. This way, we guarantee prefix-suboptimality, and as a bonus get global $\epsilon$-suboptimality without the extra factor of $N$.
+
+\begin{thm}
+When the algorithm terminates, it will return an $N\epsilon$-optimal plan, if it exists.
+\end{thm}
+
+\begin{algorithm}
+\caption{$search()$}
+\label{alg:update}
+\begin{algorithmic}
+\STATE $jointCost = \infty$
+\WHILE {$N \max_{i=1}^N f_{min,i} < jointCost$}
+\STATE choose $i\in\{1,\ldots,N\}$ such that $OPEN_{i}$ is not empty
+\STATE $(pos, hist_i)$ := remove from the front of $OPEN_{i}$
+\IF {$pos = start_{i}$}
+\FORALL {tuples $(hist_1,\ldots,hist_{i-1},hist_{i+1},\ldots,hist_N)$}
+\STATE $jointCost := \min(jointCost,jointPriority($\\\qquad$(start_i,hist_i),\ldots,(start_N,hist_N)))$
+\ENDFOR
+\ENDIF
+\STATE $expand(pos, hist)$
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$expand(pos, hist)$}
+\label{alg:update}
+\begin{algorithmic}
+\STATE mark $(pos, hist)$ as CLOSED
+\FORALL {$(pos', hist') \in successors(pos, hist)$}
+\IF {$g(pos', hist') > g(pos, hist) + c(pos, pos')$}
+\STATE $g(pos', hist') := g(pos, hist) + c(pos, pos')$
+\STATE $bp(pos', hist') := (pos, hist)$
+\IF {$(pos', hist')$ is not CLOSED}
+\STATE insert $(pos', hist')$ in $agent.OPEN$
+\ENDIF
+\ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{comment}
+
+\begin{algorithm}
+\caption{$MultiAgent A^*HighLevel()$}
+\label{alg:update}
+\begin{algorithmic}
+\STATE $\forall i:\; s_i := start_i$
+\WHILE {$g(goal_1, \ldots, goal_N) > f(s_1,\ldots,s_N)$}
+\STATE $\forall i:\; expand(s_i)$
+\STATE $(s_1,\ldots,s_N) = \arg\min_{s_1,\ldots,s_N} f(s_1,\ldots,s_N)$
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$f(s)$}
+\label{alg:update}
+\begin{algorithmic}
+\STATE $f := \infty$
+\FORALL {tuples $s_{1\ldots N}\in OPEN$ that include $s$}
+\STATE $f := \min(f, jointPriority(s_{1\ldots N}))$
+\ENDFOR
+\RETURN $f$
+\end{algorithmic}
+\end{algorithm}
+
+\end{comment}
+
+\begin{algorithm}
+\caption{$successors(u, seq_u)$}
+\label{alg:update}
+\begin{algorithmic}
+\STATE succlist := $\emptyset$
+\FORALL{$v$ such that $c(u,v) < \infty$}
+\STATE $seq_v := seq_u$
+\FORALL {min constraints $\Phi^\pm \notin seq_u$ with $v\in\Phi^\pm$}
+\STATE append $\Phi^\pm$ to $seq_v$
+\ENDFOR
+\FORALL {max constraints $\Phi^\pm$ with $v\in\Phi^\pm$}
+\STATE remove $\Phi^\pm$ from $seq_v$
+\STATE append $\Phi^\pm$ to $seq_v$
+\ENDFOR
+\STATE push $(v,seq_v)$ onto succlist
+\ENDFOR
+\RETURN succlist
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$greedyCost(\pi_1,\ldots,\pi_n)$}
+\label{alg:update}
+\begin{algorithmic}
+\STATE $\forall\Phi:\; trigger(\Phi) := \Phi$ is open or $\Phi^-$ is absent in $\pi_{1\ldots N}$
+\STATE $\forall \i\in 1\ldots N:\; u_i := v_i := start_i$
+\STATE $events := \{0: \{1\ldots N\}\}$
+\WHILE {$events$ is not empty}
+\STATE $(time, ids) := extractMin(events)$
+\FORALL {$i\in ids$}
+\STATE $u_i := v_i$
+\FORALL {constraints $\Phi^-$ with $v\in\Phi^-$}
+\IF {$\Phi$ is an open constraint \OR $\Phi^-$ appears in no suffix of $\pi_{1\ldots N}$ after $u_{1\ldots N}$}
+\STATE $trigger(\Phi) := true$
+\ENDIF
+\ENDFOR
+\ENDFOR
+\FORALL {$i\in 1\ldots N$ with $u_i = v_i \neq goal_i$}
+\STATE $v_i :=$ successor of $u_i$ on $\pi_i$
+\FORALL {constraints $\Phi^+$ with $v\in\Phi^+$}
+\IF {$\neg trigger(\Phi)$}
+\STATE $v_i := u_i$ and continue with the next $i$
+\ENDIF
+\ENDFOR
+\STATE $events(time+c(u_i,v_i)).insert(i)$
+\ENDFOR
+\ENDWHILE
+\IF {$u_{1\ldots N} = goal_{1\ldots N}$}
+\RETURN $time$
+\ELSE
+\RETURN $\infty$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$jointPriority((pos_1,hist_1),\ldots,(pos_N,hist_N))$}
+\label{alg:update}
+\begin{algorithmic}
+\STATE $\forall i$, build $\pi_i$ by following $bp()$ from $(pos_i, hist_i)$
+\FORALL {$i\in 1\ldots N$ such that $pos_i \ne start_i$}
+\STATE extend $\pi_i$ with a zero cost edge to a node that opens all doors the agent can open, followed by $start_i$ at cost $\epsilon h(s_i)$
+\ENDFOR
+\RETURN $greedyCost(\pi_1,\ldots,\pi_n)$
+\end{algorithmic}
+\end{algorithm}
+
+\bibliographystyle{aaai}
+\bibliography{ma}
+
+\end{document}
