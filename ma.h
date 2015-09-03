@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
+#include <queue>
 
 typedef unsigned long long ull;
 typedef int Cost;
@@ -97,14 +99,17 @@ class HistoryNode
 ostream& operator<<(ostream& os, const PositionNode& pos)
 {
     os << "(" << pos.x << ", " << pos.y << ")";
+    return os;
 }
 ostream& operator<<(ostream& os, const HistoryNode& hist)
 {
     os << hist.mask[0] << " " << hist.mask[1];
+    return os;
 }
 ostream& operator<<(ostream& os, const State& s)
 {
     os << *s.pos << " " << *s.hist;
+    return os;
 }
 
 class Agent
@@ -112,9 +117,10 @@ class Agent
   public:
     unique_ptr<HistoryNode> historyRoot;
     multimap<Cost,State> open;
+    unordered_map<PositionNode*, Cost> hDist;
     vector<vector<PositionNode> > grid;
     vector<string> raw_grid;
-    PositionNode* start;
+    PositionNode* startPos;
     State goal;
     int numRows;
     int numCols;

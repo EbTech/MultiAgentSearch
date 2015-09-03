@@ -53,9 +53,10 @@ void readMap()
     for (Agent& agent : agents)
     {
         cin >> agent.numRows >> agent.numCols;
-        agent.start = agent.goal.pos = nullptr;
+        agent.startPos = agent.goal.pos = nullptr;
         agent.raw_grid.resize(agent.numRows);
         agent.grid.resize(agent.numRows);
+        agent.hDist.clear();
         for (int i = 0; i < agent.numRows; ++i)
         {
             agent.grid[i].resize(agent.numCols);
@@ -64,6 +65,7 @@ void readMap()
             for (int j = 0; j < agent.numCols; ++j)
             {
                 PositionNode* pos = &agent.grid[i][j];
+                agent.hDist[pos] = INFINITE;
                 pos->x = i;
                 pos->y = j;
                 pos->obst = false;
@@ -73,8 +75,8 @@ void readMap()
                     case '.':
                         break;
                     case '!':
-                        assert(agent.start == nullptr);
-                        agent.start = pos;
+                        assert(agent.startPos == nullptr);
+                        agent.startPos = pos;
                         break;
                     case '@':
                         assert(agent.goal.pos == nullptr);
@@ -89,8 +91,34 @@ void readMap()
                 }
             }
         }
-        assert(agent.start != nullptr && agent.goal.pos != nullptr);
-        assert(agent.start->mask == 0 && agent.goal.pos->mask == 0);
+        assert(agent.startPos != nullptr && agent.goal.pos != nullptr);
+        assert(agent.startPos->mask == 0 && agent.goal.pos->mask == 0);
+        // compute relaxed distance estimates for the heuristic
+        unordered_set<PositionNode*> visited;
+        queue<PositionNode*> Q;
+        agent.hDist[agent.startPos] = 0;
+        Q.push(agent.startPos);
+        visited.insert(agent.startPos);
+        while (!Q.empty())
+        {
+            PositionNode* curPos = Q.front(); Q.pop();
+            visited.insert(curPos);
+            for (int d = 0; d < DIRS; ++d)
+            {
+                int xx = curPos->x + dx[d];
+                int yy = curPos->y + dy[d];
+                if (0 <= xx && xx < agent.numRows && 0 <= yy && yy < agent.numCols)
+                {
+                    PositionNode* nextPos = &agent.grid[xx][yy];
+                    if (!nextPos->obst && visited.find(nextPos) == visited.end())
+                    {
+                        agent.hDist[nextPos] = min(agent.hDist[nextPos], agent.hDist[curPos] + dcost[d]);
+                        Q.push(nextPos);
+                        visited.insert(nextPos);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -101,17 +129,22 @@ inline Cost h(const PositionNode* const s1, const PositionNode* const s2)
     return sqrt(dx*dx+dy*dy)*10000;
 }
 
-inline Cost f(const State& s, const PositionNode* const focus)
+inline Cost f(const State& s, Agent& agent)
+{
+    return s.getData().g + W*agent.hDist[s.pos];
+}
+
+/*inline Cost f(const State& s, const PositionNode* const focus)
 {
     return s.getData().g + W*h(s.pos, focus);
-}
+}*/
 
 void Agent::insert(const State& s)
 {
     auto& iter = s.getData().iter;
     if (iter != open.cend())
     open.erase(iter);
-    iter = open.emplace(f(s, start), s);
+    iter = open.emplace(f(s, *this), s);
 }
 
 State Agent::remove()
@@ -363,7 +396,7 @@ void search()
             //get a State to expand
             State s = agent.remove();
             num_expands++;
-            if (s.pos == agent.start)
+            if (s.pos == agent.startPos)
             {
                 for (Agent& a : agents)
                     a.foundIt = a.found.cbegin();

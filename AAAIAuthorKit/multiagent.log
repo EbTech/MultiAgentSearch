@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.9.1)  23 AUG 2015 17:28
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.9.1)  1 SEP 2015 19:32
 entering extended mode
  %&-line parsing enabled.
 **multiagent.tex
@@ -253,73 +253,56 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
 
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 68--69
-[]\OT1/ptm/m/n/10 A \OT1/ptm/b/n/10 plan \OT1/ptm/m/n/10 for agent $\OML/cmm/m/
-it/10 i$ \OT1/ptm/m/n/10 is a se-quence $\OML/cmm/m/it/10 ^^Y[] \OT1/cmr/m/n/10
- =
- []
-
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 73.
-[2]
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 75.
+ [2]
 LaTeX Font Info:    Font shape `OMS/ptm/m/it' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 115.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 131.
 
-Underfull \hbox (badness 2181) in paragraph at lines 121--123
-\OT1/ptm/m/n/10 and the vari-ables are $\OML/cmm/m/it/10 x[]; x[]; [] ; x[]$\OT
-1/ptm/m/n/10 . Draw the edges
+Underfull \hbox (badness 5050) in paragraph at lines 137--142
+[]\OT1/ptm/m/n/10 First, we re-duce 3-SAT to the di-rected ver-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 121--123
-\OT1/ptm/m/n/10 For the other agent, draw the edges
+Underfull \hbox (badness 3758) in paragraph at lines 137--142
+\OT1/ptm/m/n/10 sion of the prob-lem with only O con-straints. Let's
  []
 
 
-Underfull \hbox (badness 2443) in paragraph at lines 121--123
-\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 start[]; c[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/10
- ;  \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 c[]; req[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/
-10 ;  \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 req[]; c[]\OT1/cmr/m/n/10 )\OML/cmm/m/i
-t/10 ;  \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 c[]; goal[]\OT1/cmr/m/n/10 )$\OT1/ptm
-/m/n/10 .
+Underfull \hbox (badness 6157) in paragraph at lines 137--142
+\OT1/ptm/m/n/10 say there are $\OML/cmm/m/it/10 n$ \OT1/ptm/m/n/10 vari-ables $
+\OMS/cmsy/m/n/10 f\OML/cmm/m/it/10 x[]\OMS/cmsy/m/n/10 g[]$ \OT1/ptm/m/n/10 and
+ $\OML/cmm/m/it/10 m$ \OT1/ptm/m/n/10 clauses
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 140--141
-[]\OT1/ptm/m/n/10 This fol-lows from the in-ap-prox-ima-bil-ity of
+Overfull \hbox (14.43835pt too wide) in paragraph at lines 137--142
+\OT1/cmr/m/n/10 (\OMS/cmsy/m/n/10 :\OML/cmm/m/it/10 x[]; x[]\OT1/cmr/m/n/10 )\O
+ML/cmm/m/it/10 ;  \OT1/cmr/m/n/10 (\OMS/cmsy/m/n/10 :\OML/cmm/m/it/10 x[]; \OMS
+/cmsy/m/n/10 :\OML/cmm/m/it/10 x[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ;  \OT1/cmr
+/m/n/10 (\OML/cmm/m/it/10 x[]; u[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ;  \OT1/cmr
+/m/n/10 (\OMS/cmsy/m/n/10 :\OML/cmm/m/it/10 x[]; u[]\OT1/cmr/m/n/10 )\OML/cmm/m
+/it/10 ;  \OT1/cmr/m/n/10 (\OML/cmm/m/it/10 u[]; v[]\OT1/cmr/m/n/10 )\OML/cmm/m
+/it/10 ; [] 
  []
 
-
-Underfull \hbox (badness 8094) in paragraph at lines 140--141
-\OT1/ptm/m/n/10 SUBSET-SUM ( Moshkovitz 2012). To re-duce from
- []
-
-
-Underfull \hbox (badness 1173) in paragraph at lines 140--141
-\OT1/ptm/m/n/10 SUBSET-SUM, let the $\OML/cmm/m/it/10 i$\OT1/ptm/m/n/10 'th sub
--set be $\OMS/cmsy/m/n/10 f\OML/cmm/m/it/10 a[]\OMS/cmsy/m/n/10 g[]$\OT1/ptm/m/
-n/10 . For this
- []
-
-[3]
-Overfull \hbox (9.05328pt too wide) in paragraph at lines 178--178
+[3] [4]
+Overfull \hbox (9.05328pt too wide) in paragraph at lines 210--210
 [] []\OT1/ptm/b/n/10 for all \OT1/ptm/m/n/10 tu-ples $\OT1/cmr/m/n/10 (\OML/cmm
 /m/it/10 hist[]; [] ; hist[]; hist[]; [] ; hist[]\OT1/cmr/m/n/10 )$
  []
 
 
-LaTeX Warning: Command \i invalid in math mode on input line 257.
+LaTeX Warning: Command \i invalid in math mode on input line 289.
 
 
-Overfull \hbox (17.16812pt too wide) in paragraph at lines 288--288
+Overfull \hbox (17.16812pt too wide) in paragraph at lines 320--320
 []\OT1/ptm/b/n/10 Algorithm 5 $\OML/cmm/m/it/10 jointPriority\OT1/cmr/m/n/10 ((
 \OML/cmm/m/it/10 pos[]; hist[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; [] ; \OT1/cmr
 /m/n/10 (\OML/cmm/m/it/10 pos[]; hist[]\OT1/cmr/m/n/10 ))$ 
  []
 
-(./multiagent.bbl [4]) [5
-
-] (./multiagent.aux)
+(./multiagent.bbl [5]) [6] (./multiagent.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -327,25 +310,26 @@ LaTeX Warning: There were multiply-defined labels.
 Here is how much of TeX's memory you used:
  2325 strings out of 493878
  27958 string characters out of 1153453
- 97969 words of memory out of 3000000
+ 100969 words of memory out of 3000000
  5571 multiletter control sequences out of 15000+50000
  18392 words of font info for 41 fonts, out of 3000000 for 9000
  694 hyphenation exceptions out of 8191
- 27i,10n,24p,1120b,582s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,10n,24p,1185b,580s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/share/texmf-texli
-ve/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/ty
-pe1/public/amsfonts/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/public/a
-msfonts/cm/cmmi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/c
-mr10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr5.pfb></us
-r/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf
--texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fo
-nts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive/fonts/type1/pu
-blic/amsfonts/cm/cmsy9.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmb
-8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></usr/share/t
-exmf-texlive/fonts/type1/urw/times/utmri8a.pfb>
-Output written on multiagent.pdf (5 pages, 172662 bytes).
+ve/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-texlive/fonts/ty
+pe1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/type1/public/
+amsfonts/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/
+cmmi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr10.pfb></
+usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/tex
+mf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-texlive/fo
+nts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/p
+ublic/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfon
+ts/cm/cmsy9.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></us
+r/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-texliv
+e/fonts/type1/urw/times/utmri8a.pfb>
+Output written on multiagent.pdf (6 pages, 188357 bytes).
 PDF statistics:
- 67 PDF objects out of 1000 (max. 8388607)
+ 74 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
