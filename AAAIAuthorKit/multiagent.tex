@@ -121,6 +121,9 @@ In distributed assembly, it is often necessary for one agent to complete its tas
 
 Finally, some interesting encodings are possible in security and surveillance. If, say, $k$ agents must scan the same object, this can be encoded by giving each agent $k$ copies of the vertex where the scanning takes place, each opening one of $k$ O doors blocking the goal. Taking one of the copies blocks the agent' s remaining $k-1$ copies using an O constraint, thus preventing the same agent from being counted twice. We can also require, for instance, that one agent of each type scan the item, by simply giving different agents control over different ``doors".
 
+TODO: application from the journal paper, where all bases within range must be destroyed in order for a given route to be safe.
+
+
 \section{Hardness Results}
 
 In unconstrainted single-agent graph planning, the main difficulty stems from the graph being extremely large, often too large even to store in memory. If the graph were reasonably compact, say with only a million edges, then Dijkstra's algorithm finds the optimal path very efficiently. We might hope that something similar is true in the presence of VO constraints. However, we show here that unless P = NP, the complexity of VO-constrained planning is superpolynomial in $K$, the number of constraints. This is the case even if there is only one agent, unit edge costs, and we allow an arbitrarily large constant approximation factor. Thus, we may only hope to solve instances with few constraints in the worst case, and more complex instances if we are able to use the structure of realistic problem instances in a particular domain.
