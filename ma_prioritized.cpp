@@ -171,7 +171,7 @@ void testSolution(bool print)
 {
     // cout << "testing candidate solution << endl;
     vector<int> going(agents.size(), 0);
-    vector<int> cur(agents.size(), 0);
+    vector<int> cur(agents.size(), -1);
     multimap<Cost, int> events;
     for (int i = 0; i < agents.size(); ++i)
     {
@@ -192,7 +192,7 @@ void testSolution(bool print)
             cout << "Agent " << id << " reaches " << agents[id].raw_grid[pos->x][pos->y];
             cout << " at " << *pos << " at time = " << curTime/10000.0 << endl;
         }
-        if (pos != agents[id].goalPos && !pos->late)
+        if (cur[id] != agents[id].solution.size()-1 && !pos->late)
         {
             ++going[id];
             events.emplace(curTime + h(pos, agents[id].solution[going[id]]), id);
@@ -212,7 +212,7 @@ void testSolution(bool print)
         for (int i = 0; i < agents.size(); ++i)
         {
             pos = agents[i].solution[cur[i]];
-            if (cur[i] == going[i] && pos != agents[i].goalPos && !(pos->mask & ~trigger))
+            if (cur[i] == going[i] && cur[i] != agents[i].solution.size()-1 && !(pos->mask & ~trigger))
             {
                 ++going[i];
                 events.emplace(curTime + h(pos, agents[i].solution[going[i]]), i);
@@ -267,7 +267,7 @@ bool resolve(PositionNode* pos, HistoryNode*& hist);
 // move agents[agentID] at least as far forward as solPos
 bool resolve(int agentID, int solPos, HistoryNode*& hist)
 {
-    if (agents[agentID].stuck)
+    if (agents[agentID].stuck && hist->jointProgress[agentID] < solPos)
         return false;
     agents[agentID].stuck = true;
     while (hist->jointProgress[agentID] < solPos)
@@ -387,7 +387,9 @@ void search()
                 bool done = true;
                 HistoryNode* goalHist = s.hist;
                 for (int i = 0; i < a; ++i)
+                {
                     done &= resolve(i, agents[i].solution.size()-1, goalHist);
+                }
                 if (done)
                 {
                     while (s != agent.start)

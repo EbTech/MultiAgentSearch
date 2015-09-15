@@ -10,6 +10,8 @@
 using namespace std;
 random_device rd;
 mt19937 gen(rd());
+uniform_int_distribution<int> lucky_dis(0, 100);
+uniform_int_distribution<int> coin_dis(0, 1);
 
 struct PositionInfo
 {
@@ -42,8 +44,6 @@ void dfs(int i, int j)
     }
     shuffle(dirs.begin(), dirs.end(), gen);
     bool isMain = grid[i][j].main;
-    if (isMain)
-        goalNum = max(goalNum, grid[i][j].number);
     for (int d : dirs)        
     {
         int i1 = i + dx[d];
@@ -53,10 +53,19 @@ void dfs(int i, int j)
         if (grid[i2][j2].number == -1)
         {
             grid[i1][j1].main = grid[i2][j2].main = isMain;
-            grid[i1][j1].number = grid[i][j].number + 1;
-            grid[i2][j2].number = grid[i][j].number + 2;
+            if (isMain)
+            {
+                grid[i1][j1].number = ++goalNum;
+                grid[i2][j2].number = ++goalNum;
+                if (coin_dis(gen))
+                    isMain = false;
+            }
+            else
+            {
+                grid[i1][j1].number = goalNum;
+                grid[i2][j2].number = goalNum;
+            }
             dfs(i2, j2);
-            isMain = false;
         }
     }
 }
@@ -125,8 +134,6 @@ int main(int argc, char* argv[])
     ++t;
     uniform_int_distribution<int> row_dis(0, (R-1)/2);
     uniform_int_distribution<int> col_dis(0, (C-1)/2);
-    uniform_int_distribution<int> lucky_dis(0, 100);
-    uniform_int_distribution<int> coin_dis(0, 1);
     for (int a = 0; a < numAgents; ++a)
     {
         do

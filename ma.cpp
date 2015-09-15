@@ -171,7 +171,7 @@ void testSolution(const vector<State>& starts, bool print)
         joint_mask[0] |= s.hist->mask[0];
         joint_mask[1] |= s.hist->mask[1];
     }
-    if (takeMin[1] & joint_mask[1] & ~joint_mask[0])
+    if (takeMin[0] & joint_mask[1] & ~joint_mask[0])
         return;
     
     // cout << "testing candidate solution << endl;
