@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <cassert>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -16,58 +17,84 @@ uniform_int_distribution<int> coin_dis(0, 1);
 struct PositionInfo
 {
     int number;
+    int children;
     bool main;
     char value;
-    PositionInfo() : number(-1), main(false), value('#') {}
+    vector<int> dirs;
+    PositionInfo() : number(-2), children(0), main(false), value('#') {}
 };
 
 string doorIdToLoSymbol = "abcdefghijklmnopqrstuvwxyz-=[];/";
 string doorIdToHiSymbol = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_+{}:?";
 string doorIdToType     = "OOOOOOOOOOOOOOOOCCCCCCCCCCCCCCCC";
-int numDoors, numAgents, mapSize, R, C, goalNum;
+int numDoors, numAgents, mapSize, R, C, goalNum, cellsToExplore;
 array<int,4> dx = {1, 0, -1, 0};
 array<int,4> dy = {0, 1, 0, -1};
 vector<vector<pair<int,char> > > actions;
 vector<vector<PositionInfo> > grid;
 
-void dfs(int i, int j)
+void dfsCarve(int i, int j)
 {
+    --cellsToExplore;
     vector<int> dirs;
     for (int d = 0; d < 4; ++d)
-    {
-        int i1 = i + dx[d];
-        int j1 = j + dy[d];
-        int i2 = i1 + dx[d];
-        int j2 = j1 + dy[d];
-        if (0 <= i2 && i2 < R && 0 <= j2 && j2 < C)
-            dirs.push_back(d);
-    }
+        dirs.push_back(d);
     shuffle(dirs.begin(), dirs.end(), gen);
-    bool isMain = grid[i][j].main;
-    for (int d : dirs)        
+    for (int d : dirs)
     {
         int i1 = i + dx[d];
         int j1 = j + dy[d];
         int i2 = i1 + dx[d];
         int j2 = j1 + dy[d];
-        if (grid[i2][j2].number == -1)
+        if (0 <= i2 && i2 < R && 0 <= j2 && j2 < C && grid[i2][j2].number == -2)
         {
-            grid[i1][j1].main = grid[i2][j2].main = isMain;
-            if (isMain)
-            {
-                grid[i1][j1].number = ++goalNum;
-                grid[i2][j2].number = ++goalNum;
-                if (coin_dis(gen))
-                    isMain = false;
-            }
-            else
-            {
-                grid[i1][j1].number = goalNum;
-                grid[i2][j2].number = goalNum;
-            }
-            dfs(i2, j2);
+            grid[i][j].dirs.push_back(d);
+            grid[i1][j1].number = grid[i2][j2].number = -1;
+            grid[i1][j1].children = cellsToExplore;
+            dfsCarve(i2, j2);
+            grid[i1][j1].children -= cellsToExplore;
         }
     }
+}
+
+void dfsLabel(int i, int j)
+{
+    bool isMain = grid[i][j].main;
+    int total = 0;
+    for (int d : grid[i][j].dirs)
+    {
+        int i1 = i + dx[d];
+        int j1 = j + dy[d];
+        total += grid[i1][j1].children;
+    }
+    if (total == 0) return;
+    uniform_int_distribution<int> child_dis(0, total-1);
+    int mainChild = child_dis(gen);
+    
+    for (int d : grid[i][j].dirs)
+    {
+        int i1 = i + dx[d];
+        int j1 = j + dy[d];
+        int i2 = i1 + dx[d];
+        int j2 = j1 + dy[d];
+        grid[i1][j1].main = grid[i2][j2].main = isMain;
+        if (isMain)
+        {
+            grid[i1][j1].number = ++goalNum;
+            grid[i2][j2].number = ++goalNum;
+            dfsLabel(i2, j2);
+            mainChild -= grid[i1][j1].children;
+            if (mainChild < 0)
+                isMain = false;
+        }
+        else
+        {
+            grid[i1][j1].number = goalNum;
+            grid[i2][j2].number = goalNum;
+            dfsLabel(i2, j2);
+        }
+    }
+    assert(!isMain);
 }
 
 int main(int argc, char* argv[])
@@ -144,7 +171,10 @@ int main(int argc, char* argv[])
             grid[startx][starty].number = 0;
             grid[startx][starty].main = true;
             goalNum = 0;
-            dfs(startx, starty);
+            cellsToExplore = ((R+1)/2)*((C+1)/2);
+            dfsCarve(startx, starty);
+            dfsLabel(startx, starty);
+            assert(cellsToExplore == 0);
         }
         while (goalNum < t);
         
@@ -159,7 +189,7 @@ int main(int argc, char* argv[])
         for (int j = 0; j < C; ++j)
         {
             int lucky = lucky_dis(gen);
-            if (grid[i][j].number != -1)
+            if (grid[i][j].number >= 0)
                 grid[i][j].value = '.';
             if (grid[i][j].main)
             {
@@ -181,6 +211,5 @@ int main(int argc, char* argv[])
                 cout << grid[i][j].value;
             cout << endl;
         }
-        cout << endl;
     }
 }

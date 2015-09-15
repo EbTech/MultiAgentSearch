@@ -162,7 +162,7 @@ State Agent::remove()
     cout << endl;
 */
 
-void testSolution(const vector<State>& starts, bool print)
+bool testSolution(const vector<State>& starts, bool print)
 {
     // if the solution attempts to use a door that's never opened, prune it
     ull joint_mask[] = {0, 0};
@@ -172,7 +172,7 @@ void testSolution(const vector<State>& starts, bool print)
         joint_mask[1] |= s.hist->mask[1];
     }
     if (takeMin[0] & joint_mask[1] & ~joint_mask[0])
-        return;
+        return false;
     
     // cout << "testing candidate solution << endl;
     vector<State> going = starts;
@@ -263,13 +263,16 @@ void testSolution(const vector<State>& starts, bool print)
     }
     cout << s << endl;*/
     for (int i = 0; i < starts.size(); ++i)
+    {
         if (cur[i] != agents[i].goal)
-            return;
+            return false;
+    }
     if (joint_cost > curTime)
     {
         joint_cost = curTime;
         joint_solution = starts;
     }
+    return true;
 }
 
 void testAll(int pos)
@@ -279,7 +282,8 @@ void testAll(int pos)
         vector<State> starts;
         for (Agent& agent : agents)
             starts.push_back(*agent.foundIt);
-        return testSolution(starts, false);
+        testSolution(starts, false);
+        return;
     }
     if (agents[pos].foundIt == agents[pos].found.cend())
         return;

@@ -8,7 +8,7 @@ for doors in 4
 do
   for agents in 4
   do
-    for mapsize in 3
+    for mapsize in 4
     do
       ./mapmaker ${doors} ${agents} ${mapsize} > genmap.txt
       ./ma < genmap.txt

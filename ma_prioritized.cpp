@@ -167,7 +167,7 @@ State Agent::remove()
     cout << endl;
 */
 
-void testSolution(bool print)
+bool testSolution(bool print)
 {
     // cout << "testing candidate solution << endl;
     vector<int> going(agents.size(), 0);
@@ -227,40 +227,20 @@ void testSolution(bool print)
     for (int i = 0; i < agents.size(); ++i)
     {
         if (cur[i] != agents[i].solution.size()-1)
-            return;
+            return false;
     }
     if (joint_cost > curTime)
     {
         joint_cost = curTime;
     }
+    return true;
 }
 
 HistoryNode* transition(HistoryNode* hist, PositionNode* pos)
 {
-    stack<pair<ull, bool> > st;
-    ull posMaxes = pos->mask & ~takeMin[pos->late]; // TODO optimizations: ignore C-door uses
-    // this should stop at the root because doors are only opened there
-    while (posMaxes & hist->mask[pos->late])
-    {
-        ull change[2];
-        change[0] = hist->mask[0] & ~hist->parent->mask[0];
-        change[1] = hist->mask[1] & ~hist->parent->mask[1];
-        if (change[0])
-            st.emplace(change[0], false);
-        else
-            st.emplace(change[1], true);
-        hist = hist->parent;
-    }
-    while (!st.empty())
-    {
-        ull mask = st.top().first;
-        bool late = st.top().second;
-        st.pop();
-        if (late == pos->late)
-            mask &= ~posMaxes;
-        hist = hist->getChild(mask, late);
-    }
-    return hist->getChild(pos->mask, pos->late);
+    // C-door uses, which are the only takeMax, need not be remembered
+    ull posMins = pos->mask & takeMin[pos->late];
+    return hist->getChild(posMins, pos->late);
 }
 
 bool resolve(PositionNode* pos, HistoryNode*& hist);
@@ -285,6 +265,9 @@ bool resolve(int agentID, int solPos, HistoryNode*& hist)
 // append pos to hist, but only after successfully traversing pos
 bool resolve(PositionNode* pos, HistoryNode*& hist)
 {
+    // we must not enter a closed door
+    if (!pos->late && (pos->mask & ~takeMin[0] & hist->mask[1]))
+        return false;
     if (pos->late)
     for (int i = 0; i < numDoors; ++i)
     {
@@ -442,7 +425,7 @@ int main(int argc, char** argv)
     if (!agents.back().solution.empty())
     {
         cout << "ALL " << agents.size() << " agents found consistent plans!" << endl;
-        testSolution(true);
+        assert(testSolution(true));
     }
 
     //report stats
