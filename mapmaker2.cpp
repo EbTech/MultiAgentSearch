@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
     cout << doorIdToHiSymbol << endl;
     cout << doorIdToType << endl;
     cout << numAgents << endl;
-    R = mapSize, C = 2*mapSize;
+    R = 2*mapSize - 1, C = 4*mapSize - 1;
     
     actions.resize(numAgents);
     int openEnd = numDoors / 2;
@@ -123,8 +123,8 @@ int main(int argc, char* argv[])
         }
     }
     ++t;
-    uniform_int_distribution<int> row_dis(0, R-1);
-    uniform_int_distribution<int> col_dis(0, C-1);
+    uniform_int_distribution<int> row_dis(0, (R-1)/2);
+    uniform_int_distribution<int> col_dis(0, (C-1)/2);
     uniform_int_distribution<int> lucky_dis(0, 100);
     uniform_int_distribution<int> coin_dis(0, 1);
     for (int a = 0; a < numAgents; ++a)
@@ -132,8 +132,8 @@ int main(int argc, char* argv[])
         do
         {
             grid = vector<vector<PositionInfo> >(R, vector<PositionInfo>(C));
-            int startx = row_dis(gen);
-            int starty = col_dis(gen);
+            int startx = 2*row_dis(gen);
+            int starty = 2*col_dis(gen);
             grid[startx][starty].number = 0;
             grid[startx][starty].main = true;
             goalNum = 0;
