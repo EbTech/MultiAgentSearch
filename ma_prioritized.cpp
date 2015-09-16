@@ -252,13 +252,14 @@ bool resolve(int agentID, int solPos, HistoryNode*& hist)
     agents[agentID].stuck = true;
     while (hist->jointProgress[agentID] < solPos)
     {
-        PositionNode* pos = agents[agentID].solution[hist->jointProgress[agentID]+1];
+        int curPos = hist->jointProgress[agentID] + 1;
+        PositionNode* pos = agents[agentID].solution[curPos];
         if (!resolve(pos, hist))
         {
             agents[agentID].stuck = false;
             return false;
         }
-        ++hist->jointProgress[agentID];
+        hist->jointProgress[agentID] = curPos;
     }
     agents[agentID].stuck = false;
     return true;
@@ -435,7 +436,7 @@ int main(int argc, char** argv)
     cout << " Visited Nodes=" << num_discovered;
     cout << " Explored Nodes=" << num_expands;
     cout << " Planning Time=" << dt << endl;
-    fprintf(fout,"%f %f %d %f\n",W,dt,num_expands,joint_cost/10000.0);
+    fprintf(fout,"%d %f %d %f\n",W,joint_cost/10000.0,num_expands,dt);
 
     fclose(fout);
 }

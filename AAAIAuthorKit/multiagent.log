@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.9.1)  12 SEP 2015 20:27
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.9.1)  16 SEP 2015 02:08
 entering extended mode
  %&-line parsing enabled.
 **multiagent.tex
@@ -287,16 +287,16 @@ ML/cmm/m/it/10 ;  \OT1/cmr/m/n/10 (\OMS/cmsy/m/n/10 :\OML/cmm/m/it/10 x[]; \OMS
  []
 
 [3] [4]
-Overfull \hbox (9.05328pt too wide) in paragraph at lines 218--218
+Overfull \hbox (9.05328pt too wide) in paragraph at lines 226--226
 [] []\OT1/ptm/b/n/10 for all \OT1/ptm/m/n/10 tu-ples $\OT1/cmr/m/n/10 (\OML/cmm
 /m/it/10 hist[]; [] ; hist[]; hist[]; [] ; hist[]\OT1/cmr/m/n/10 )$
  []
 
 
-LaTeX Warning: Command \i invalid in math mode on input line 297.
+LaTeX Warning: Command \i invalid in math mode on input line 305.
 
 
-Overfull \hbox (17.16812pt too wide) in paragraph at lines 328--328
+Overfull \hbox (17.16812pt too wide) in paragraph at lines 336--336
 []\OT1/ptm/b/n/10 Algorithm 5 $\OML/cmm/m/it/10 jointPriority\OT1/cmr/m/n/10 ((
 \OML/cmm/m/it/10 pos[]; hist[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; [] ; \OT1/cmr
 /m/n/10 (\OML/cmm/m/it/10 pos[]; hist[]\OT1/cmr/m/n/10 ))$ 
@@ -329,7 +329,7 @@ ublic/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfon
 ts/cm/cmsy9.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></us
 r/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-texliv
 e/fonts/type1/urw/times/utmri8a.pfb>
-Output written on multiagent.pdf (6 pages, 186652 bytes).
+Output written on multiagent.pdf (6 pages, 186717 bytes).
 PDF statistics:
  74 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

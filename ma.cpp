@@ -446,7 +446,7 @@ int main(int argc, char** argv)
     cout << " Explored Nodes=" << num_expands;
     cout << " Planning Time=" << dt << endl;
     cout << " Joint Testing Time=" << test_duration << endl;
-    fprintf(fout,"%f %f %d %f\n",W,dt,num_expands,joint_cost/10000.0);
+    fprintf(fout,"%d %f %d %f %f\n",W,joint_cost/10000.0,num_expands,dt,test_duration);
 
     fclose(fout);
 }

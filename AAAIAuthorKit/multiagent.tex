@@ -206,6 +206,14 @@ Now, assuming the termination condition, we want to bound the optimality factor 
 \section{Trie Stuff}
 A \textbf{state} is the search space of agent $i$ is an ordered pair $(v, seq)$ of vertex $v\in V_i$ and history sequence $seq$. States are accessed by following a trie according to the sequence of constraints named in $seq$. Then, $v$ is reached simply by looking it up in a map stored in $seq$'s trie node.
 
+\section{experiments}
+
+\begin{tabular} {c|c|c} \hline
+1 & 1 & 1 \\ \hline
+1 & 1 & 1 \\ \hline
+1 & 1 & 1 \\ \hline
+\end{tabular}
+
 \begin{algorithm}
 \caption{$search()$}
 \label{alg:update}

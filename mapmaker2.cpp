@@ -11,7 +11,7 @@
 using namespace std;
 random_device rd;
 mt19937 gen(rd());
-uniform_int_distribution<int> lucky_dis(0, 100);
+uniform_int_distribution<int> lucky_dis(0, 199);
 uniform_int_distribution<int> coin_dis(0, 1);
 
 struct PositionInfo
