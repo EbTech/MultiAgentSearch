@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.9.1)  16 SEP 2015 02:08
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.9.1)  16 SEP 2015 06:43
 entering extended mode
  %&-line parsing enabled.
 **multiagent.tex
@@ -286,23 +286,31 @@ ML/cmm/m/it/10 ;  \OT1/cmr/m/n/10 (\OMS/cmsy/m/n/10 :\OML/cmm/m/it/10 x[]; \OMS
 /it/10 ; [] 
  []
 
-[3] [4]
-Overfull \hbox (9.05328pt too wide) in paragraph at lines 226--226
+[3]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 177.
+ [4]
+Overfull \hbox (6.1537pt too wide) in paragraph at lines 218--225
+ [][] 
+ []
+
+
+Overfull \hbox (9.05328pt too wide) in paragraph at lines 270--270
 [] []\OT1/ptm/b/n/10 for all \OT1/ptm/m/n/10 tu-ples $\OT1/cmr/m/n/10 (\OML/cmm
 /m/it/10 hist[]; [] ; hist[]; hist[]; [] ; hist[]\OT1/cmr/m/n/10 )$
  []
 
 
-LaTeX Warning: Command \i invalid in math mode on input line 305.
+LaTeX Warning: Command \i invalid in math mode on input line 349.
 
 
-Overfull \hbox (17.16812pt too wide) in paragraph at lines 336--336
+Overfull \hbox (17.16812pt too wide) in paragraph at lines 380--380
 []\OT1/ptm/b/n/10 Algorithm 5 $\OML/cmm/m/it/10 jointPriority\OT1/cmr/m/n/10 ((
 \OML/cmm/m/it/10 pos[]; hist[]\OT1/cmr/m/n/10 )\OML/cmm/m/it/10 ; [] ; \OT1/cmr
 /m/n/10 (\OML/cmm/m/it/10 pos[]; hist[]\OT1/cmr/m/n/10 ))$ 
  []
 
-(./multiagent.bbl [5]) [6
+(./multiagent.bbl [5] [6]) [7
 
 ] (./multiagent.aux)
 
@@ -310,28 +318,26 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 2330 strings out of 493878
- 28006 string characters out of 1153453
- 97009 words of memory out of 3000000
- 5576 multiletter control sequences out of 15000+50000
- 18392 words of font info for 41 fonts, out of 3000000 for 9000
+ 2339 strings out of 493878
+ 28130 string characters out of 1153453
+ 106064 words of memory out of 3000000
+ 5584 multiletter control sequences out of 15000+50000
+ 20525 words of font info for 44 fonts, out of 3000000 for 9000
  694 hyphenation exceptions out of 8191
- 27i,10n,24p,1098b,580s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,10n,24p,1218b,580s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/share/texmf-texli
 ve/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-texlive/fonts/ty
 pe1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/type1/public/
-amsfonts/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/
-cmmi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr10.pfb></
-usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/tex
-mf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-texlive/fo
-nts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/p
-ublic/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfon
-ts/cm/cmsy9.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></us
-r/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></usr/share/texmf-texliv
-e/fonts/type1/urw/times/utmri8a.pfb>
-Output written on multiagent.pdf (6 pages, 186717 bytes).
+amsfonts/cm/cmmi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/
+cmr10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></u
+sr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/te
+xmf-texlive/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive/
+fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texmf-texlive/fonts/type1/
+urw/times/utmb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb
+></usr/share/texmf-texlive/fonts/type1/urw/times/utmri8a.pfb>
+Output written on multiagent.pdf (7 pages, 176929 bytes).
 PDF statistics:
- 74 PDF objects out of 1000 (max. 8388607)
+ 71 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
