@@ -252,12 +252,13 @@ bool resolve(int agentID, int solPos, HistoryNode*& hist)
     agents[agentID].stuck = true;
     while (hist->jointProgress[agentID] < solPos)
     {
-        PositionNode* pos = agents[agentID].solution[++hist->jointProgress[agentID]];
+        PositionNode* pos = agents[agentID].solution[hist->jointProgress[agentID]+1];
         if (!resolve(pos, hist))
         {
             agents[agentID].stuck = false;
             return false;
         }
+        ++hist->jointProgress[agentID];
     }
     agents[agentID].stuck = false;
     return true;

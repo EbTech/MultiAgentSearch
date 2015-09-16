@@ -27,7 +27,7 @@ struct PositionInfo
 string doorIdToLoSymbol = "abcdefghijklmnopqrstuvwxyz-=[];/";
 string doorIdToHiSymbol = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_+{}:?";
 string doorIdToType     = "OOOOOOOOOOOOOOOOCCCCCCCCCCCCCCCC";
-int numDoors, numAgents, mapSize, R, C, goalNum, cellsToExplore;
+int numDoors, numAgents, R, C, goalNum, cellsToExplore;
 array<int,4> dx = {1, 0, -1, 0};
 array<int,4> dy = {0, 1, 0, -1};
 vector<vector<pair<int,char> > > actions;
@@ -99,19 +99,19 @@ void dfsLabel(int i, int j)
 
 int main(int argc, char* argv[])
 {
-    if (argc != 4)
+    if (argc != 5)
     {
-        cout << "Usage: ./mapmaker <numDoors> <numAgents> <mapSize>" << endl;
+        cout << "Usage: ./mapmaker <numDoors> <numAgents> <rows> <cols>" << endl;
         exit(-1);
     }
     numDoors = atoi(argv[1]);
     numAgents = atoi(argv[2]);
-    mapSize = atoi(argv[3]);
+    R = atoi(argv[3]);
+    C = atoi(argv[4]);
     cout << doorIdToLoSymbol << endl;
     cout << doorIdToHiSymbol << endl;
     cout << doorIdToType << endl;
     cout << numAgents << endl;
-    R = 2*mapSize - 1, C = 4*mapSize - 1;
     
     actions.resize(numAgents);
     int openEnd = numDoors / 2;
