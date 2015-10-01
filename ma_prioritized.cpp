@@ -5,6 +5,7 @@
 #include <stack>
 #include <sstream>
 #include <algorithm>
+#include <random>
 
 typedef chrono::high_resolution_clock Clock;
 
@@ -16,6 +17,7 @@ array<Cost,DIRS> dcost = {14142,14142,14142,14142,10000,10000,10000,10000};
 
 int num_discovered;
 int num_expands;
+Clock::time_point timeout;
 
 vector<Agent> agents;
 ull takeMin[] = {0, 0};
@@ -328,8 +330,6 @@ void Agent::expand(State& s)
 
 void prepare()
 {
-    num_expands = 0;
-    num_discovered = 1;
     openerPos = openerAgent = vector<int>(numDoors, -1);
     for (Agent& agent : agents)
     {
@@ -362,7 +362,7 @@ void search()
             // optimistically open doors using the remaining agents
             agent.historyRoot->mask[0] |= agents[i].canOpen;
         }
-        while (!agent.open.empty())
+        while (!agent.open.empty() && Clock::now() < timeout)
         {
             // get a State to expand
             State s = agent.remove();
@@ -416,11 +416,18 @@ int main(int argc, char** argv)
     FILE* fout = fopen("stats.csv","w");
     //load map
     readMap();
+    num_expands = 0;
+    num_discovered = 1;
 
     //run planner
     Clock::time_point t0 = Clock::now();
-    prepare();
-    search();
+    timeout = t0 + chrono::seconds(5);
+    while (agents.back().solution.empty() && Clock::now() < timeout)
+    {
+        shuffle(agents.begin(), agents.end(), default_random_engine(623489));
+        prepare();
+        search();
+    }
     Clock::time_point t1 = Clock::now();
     
     //report joint plan

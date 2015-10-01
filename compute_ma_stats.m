@@ -1,10 +1,10 @@
 function compute_stats()
 %make sure 1 is the first number in the thread list
-doors = [7];
-agents = [7];
-mrows = [13];
+doors = [16];
+agents = [8];
+mrows = [25];
 
-for i=1:10
+for i=1:50
   filename = ['/usr0/home/aebtekar/Research/MultiAgentSearch/stats/complete_' num2str(doors(1)) '_' num2str(agents(1)) '_' num2str(mrows(1)) '_' num2str(i) '.csv'];
   data = load(filename);
   cost(i) = data(2);
@@ -20,18 +20,20 @@ for i=1:10
 end
 
 format long g;
+doors
 agents
+mrows
 
-st = sort(time)
-0.5 * (st(5)+st(6))
-st = sort(expands);
-0.5 * (st(5)+st(6))
-%jtime
-st = sort(gtime)
-0.5 * (st(5)+st(6))
-st = sort(gexpands);
-0.5 * (st(5)+st(6))
-cost
-gcost
+v = sort(time);
+v(14)
+v(37)
+0.5 * (v(25)+v(26))
+2*sum(v < 5)
+
+v = sort(gtime);
+v(14)
+v(37)
+0.5 * (v(25)+v(26))
+2*sum(v < 5)
 
 %fprintf('%d %d %d\n',mean(cost), mean(expands), mean(time));

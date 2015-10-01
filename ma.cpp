@@ -16,6 +16,7 @@ array<Cost,DIRS> dcost = {14142,14142,14142,14142,10000,10000,10000,10000};
 int num_discovered;
 int num_expands;
 double test_duration;
+Clock::time_point timeout;
 
 vector<Agent> agents;
 ull takeMin[] = {0, 0};
@@ -277,6 +278,8 @@ bool testSolution(const vector<State>& starts, bool print)
 
 void testAll(int pos)
 {
+    if (Clock::now() >= timeout)
+        return;
     if (pos == agents.size())
     {
         vector<State> starts;
@@ -368,8 +371,6 @@ void Agent::expand(State& s)
 
 void prepare()
 {
-    num_expands = 0;
-    num_discovered = 1;
     for (Agent& agent : agents)
     {
         agent.fmin = 0;
@@ -391,7 +392,7 @@ void prepare()
 void search()
 {
     joint_bound = 0, joint_cost = INFINITE;
-    while (agents.size() * joint_bound < joint_cost) // watch for overflow
+    while (agents.size() * joint_bound < joint_cost && Clock::now() < timeout) // watch for overflow
     {
         joint_bound = INFINITE;
         for (Agent& agent : agents)
@@ -428,10 +429,13 @@ int main(int argc, char** argv)
     FILE* fout = fopen("stats.csv","w");
     //load map
     readMap();
+    num_expands = 0;
+    num_discovered = 1;
 
     //run planner
     test_duration = 0;
     Clock::time_point t0 = Clock::now();
+    timeout = t0 + chrono::seconds(5);
     prepare();
     search();
     Clock::time_point t1 = Clock::now();
