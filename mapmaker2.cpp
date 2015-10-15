@@ -21,7 +21,7 @@ struct PositionInfo
     bool main;
     char value;
     vector<int> dirs;
-    PositionInfo() : number(-2), children(0), main(false), value('#') {}
+    PositionInfo() : number(-2), children(0), main(false), value('@') {}
 };
 
 string doorIdToLoSymbol = "abcdefghijklmnopqrstuvwxyz-=[];/";
@@ -116,7 +116,8 @@ int main(int argc, char* argv[])
     actions.resize(numAgents);
     int openEnd = numDoors / 2;
     int closeEnd = 16 + numDoors - openEnd;
-    int openLo = 0, openHi = 0, closeLo = 16, closeHi = 16, t = 0;
+    int openLo = 0, openHi = 0, closeLo = 16, closeHi = 16;
+    vector<int> t(numAgents, 1);
     uniform_int_distribution<int> agent_dis(0, numAgents-1);
     uniform_int_distribution<int> action_dis(0, 3);
     while (openHi < openEnd || closeHi < closeEnd)
@@ -127,38 +128,33 @@ int main(int argc, char* argv[])
             case 0:
                 if (openLo < openEnd)
                 {
-                    ++t;
-                    pair<int,char> entry = make_pair(t, doorIdToLoSymbol[openLo++]);
+                    pair<int,char> entry = make_pair(t[a]++, doorIdToLoSymbol[openLo++]);
                     actions[a].push_back(entry);
                 }
                 break;
             case 1:
                 if (openHi < openLo)
                 {
-                    ++t;
-                    pair<int,char> entry = make_pair(t, doorIdToHiSymbol[openHi++]);
+                    pair<int,char> entry = make_pair(t[a]++, doorIdToHiSymbol[openHi++]);
                     actions[a].push_back(entry);
                 }
                 break;
             case 2:
                 if (closeLo < closeEnd)
                 {
-                    ++t;
-                    pair<int,char> entry = make_pair(t, doorIdToLoSymbol[closeLo++]);
+                    pair<int,char> entry = make_pair(t[a]++, doorIdToLoSymbol[closeLo++]);
                     actions[a].push_back(entry);
                 }
                 break;
             case 3:
                 if (closeHi < closeLo)
                 {
-                    ++t;
-                    pair<int,char> entry = make_pair(t, doorIdToHiSymbol[closeHi++]);
+                    pair<int,char> entry = make_pair(t[a]++, doorIdToHiSymbol[closeHi++]);
                     actions[a].push_back(entry);
                 }
                 break;
         }
     }
-    ++t;
     uniform_int_distribution<int> row_dis(0, (R-1)/2);
     uniform_int_distribution<int> col_dis(0, (C-1)/2);
     for (int a = 0; a < numAgents; ++a)
@@ -176,14 +172,14 @@ int main(int argc, char* argv[])
             dfsLabel(startx, starty);
             assert(cellsToExplore == 0);
         }
-        while (goalNum < t);
+        while (goalNum < t[a]);
         
         unordered_map<int, char> numberToValue;
         numberToValue[0] = '!';
-        numberToValue[goalNum] = '@';
+        numberToValue[goalNum] = '#';
         for (pair<int,char>& entry : actions[a])
         {
-            numberToValue[entry.first * goalNum / t] = entry.second;
+            numberToValue[entry.first * goalNum / t[a]] = entry.second;
         }
         for (int i = 0; i < R; ++i)
         for (int j = 0; j < C; ++j)

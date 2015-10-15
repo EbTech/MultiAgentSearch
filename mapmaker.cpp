@@ -97,14 +97,14 @@ int main(int argc, char* argv[])
         for (int i = mapSize; i < R; i += mapSize+1)
         {
             for (int j = 1; j < C-1; ++j)
-                grid[i][j] = '#';
+                grid[i][j] = '@';
             if (i % (2*mapSize+2) == mapSize)
-                grid[i][0] = '#';
+                grid[i][0] = '@';
             else
-                grid[i][C-1] = '#';
+                grid[i][C-1] = '@';
         }
         getCell(grid, 0) = '!';
-        getCell(grid, t) = '@';
+        getCell(grid, t) = '#';
         for (pair<int,char> entry : actions[a])
         {
             for (int i = 0; i < mapSize; ++i)

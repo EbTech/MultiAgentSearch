@@ -83,11 +83,11 @@ void readMap()
                         assert(agent.start.pos == nullptr);
                         agent.start.pos = pos;
                         break;
-                    case '@':
+                    case '#':
                         assert(agent.goalPos == nullptr);
                         agent.goalPos = pos;
                         break;
-                    case '#':
+                    case '@':
                         pos->obst = true;
                         break;
                     default:
