@@ -12,6 +12,7 @@ constexpr int W = 1;
 array<int,DIRS> dx = {1,1,-1,-1,1,0,-1,0};
 array<int,DIRS> dy = {1,-1,1,-1,0,1,0,-1};
 array<Cost,DIRS> dcost = {14142,14142,14142,14142,10000,10000,10000,10000};
+string visualPathSymbols = "$%^&*";
 
 int num_discovered;
 int num_expands;
@@ -162,6 +163,38 @@ State Agent::remove()
         cout << it->second << "|" << it->first << " ";
     cout << endl;
 */
+
+/*vector<string> visualizePath(const Agent& agent, const State& start)
+{
+    vector<string> ret = agent.raw_grid;
+    State cur = start;
+    ret[cur.pos->x][cur.pos->y] = '$';
+    while (cur != agent.goal)
+    {
+        cur = cur.bp;
+        ret[cur.pos->x][cur.pos->y] = '$';
+    }
+    return ret;
+}*/
+vector<string> visualizePath()
+{
+    vector<string> ret = agents[0].raw_grid;
+    for (int i = 0; i < agents[0].numRows; ++i)
+    for (int j = 0; j < agents[0].numCols; ++j)
+        if (ret[i][j] == '.')
+            ret[i][j] = agents[1].raw_grid[i][j];
+    for (int a = 0; a < agents.size(); ++a)
+    {
+        State cur = joint_solution[a];
+        ret[cur.pos->x][cur.pos->y] = visualPathSymbols[a%visualPathSymbols.size()];
+        while (cur != agents[a].goal)
+        {
+            cur = cur.getData().bp;
+            ret[cur.pos->x][cur.pos->y] = visualPathSymbols[a%visualPathSymbols.size()];
+        }
+    }
+    return ret;
+}
 
 bool testSolution(const vector<State>& starts, bool print)
 {
@@ -426,7 +459,6 @@ void search()
 
 int main(int argc, char** argv)
 {
-    FILE* fout = fopen("stats.csv","w");
     //load map
     readMap();
     num_expands = 0;
@@ -450,7 +482,17 @@ int main(int argc, char** argv)
     cout << " Explored Nodes=" << num_expands;
     cout << " Planning Time=" << dt << endl;
     cout << " Joint Testing Time=" << test_duration << endl;
+    
+    FILE* fout = fopen("stats.csv","w");
     fprintf(fout,"%d %f %d %f %f\n",W,joint_cost/10000.0,num_expands,dt,test_duration);
-
     fclose(fout);
+    
+    for (int a = 0; a < agents.size(); ++a)
+    {
+        fout = fopen("visualf.txt","w");
+        vector<string> visual = visualizePath();
+        for (int i = 0; i < visual.size(); ++i)
+            fprintf(fout,"%s\n",visual[i].c_str());
+        fclose(fout);
+    }
 }

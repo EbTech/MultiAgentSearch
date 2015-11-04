@@ -79,18 +79,18 @@ VO constraints impose certain order relations between the relative visit times o
 \item Sequence: Two regions must be visited, and the first visit of region 1 must precede the last visit of region 2. Imagine, for instance, that one agent must send a piece of information, e.g. an email, to another. The email may be sent multiple times, and the inbox may be checked multiple times, but the crucial requirement is that the receiving agent must finally see the email.
 \end{itemize}
 
-More formally, a VO constraint $\phi = \langle\phi^-,\phi^+,\tau\rangle$ is described by two regions $\phi^-,\phi^+\subset \cup_i V_i$, along with a \textbf{constraint type} $\tau(\phi)$ describing the relationship $\phi$ imposes on the relative visit times of $\phi^-$ and $\phi^+$. To understand the constraint types, fix a joint plan $\{\pi_i\}_{i=1}^N$. For any vertex set $S \subset \cup_i V_i$, let $t_{min}(S)$ denote the very first time at which any $\pi_i$ visits any of the vertices in $S$. Likewise, let $t_{max}(S)$ denote the last time $S$ is visited. The four constraint types are defined by the following inequalities:
+More formally, a VO constraint $\phi = \langle V^-(\phi),V^+(\phi),\tau(\phi)\rangle$ is described by two regions $V^-(\phi),V^+(\phi)\subset \cup_i V_i$, along with a \textbf{constraint type} $\tau(\phi)$ describing the relationship $\phi$ imposes on the relative visit times of $V^-(\phi)$ and $V^+(\phi)$. To understand the constraint types, fix a joint plan $\{\pi_i\}_{i=1}^N$. For any vertex set $S \subset \cup_i V_i$, let $t_{min}(S)$ denote the very first time at which any $\pi_i$ visits any of the vertices in $S$. Likewise, let $t_{max}(S)$ denote the last time $S$ is visited. The four constraint types are defined by the following inequalities:
 
 \begin{itemize}
-\item O (open) constraint: $t_{\min}(\phi^-) \le t_{\min}(\phi^+)$
-\item C (close) constraint: $t_{\max}(\phi^-) \le t_{\min}(\phi^+)$
-\item R (restore) constraint: $t_{\max}(\phi^-) \le t_{\max}(\phi^+)$
-\item S (sequence) constraint: $t_{\min}(\phi^-) \le t_{\max}(\phi^+)$
+\item O (open) constraint: $t_{\min}(V^+(\phi)) \le t_{\min}(V^+(\phi))$
+\item C (close) constraint: $t_{\max}(V^+(\phi)) \le t_{\min}(V^+(\phi))$
+\item R (restore) constraint: $t_{\max}(V^-(\phi)) \le t_{\max}(V^+(\phi))$
+\item S (sequence) constraint: $t_{\min}(V^-(\phi)) \le t_{\max}(V^+(\phi))$
 \end{itemize}
 
-When the corresponding inequality is met, we say that $\{\pi_i\}_{i=1}^N$ satisfies $\phi$. These definitions conrrespond to the preceding intuitions: looking at O constraints, for instance, $\phi^+$ is the door region while $\phi^-$ is the trigger.
+When the corresponding inequality is met, we say that $\{\pi_i\}_{i=1}^N$ satisfies $\phi$. These definitions conrrespond to the preceding intuitions: looking at O constraints, for instance, $V^+(\phi)$ is the door region while $V^-(\phi)$ is the trigger.
 
-Notice that if neither of $\phi^+,\phi^-$ are ever visited, then by the usual definition of $\min,\max$ of empty sets as $\infty, -\infty$ respectively, $\phi$ is satisfied iff $\tau(\phi)\ne S$. For $v\in \cup_i V_i$, we will use the notations $v^+ = \{\phi \mid v\in\phi^+\}$ and $v^- = \{\phi \mid v\in\phi^-\}$ to refer to constraints associated with a particular vertex. To prevent technical ambiguities, we further require that for each $v$, at least one of $v^+$ or $v^-$ is empty. Equivalently, $(\cup_{i=1}^K \phi_i^+) \cap (\cup_{i=1}^K \phi_i^-) = \emptyset$.
+Notice that if neither of $V^-(\phi),V^+(\phi)$ are ever visited, then by the usual definition of $\min,\max$ of empty sets as $\infty, -\infty$ respectively, $\phi$ is satisfied iff $\tau(\phi)\ne S$. For $v\in \cup_i V_i$, we will use the notations $\Phi^-(v) = \{\phi \mid v\in V^-(\phi)\}$ and $\Phi^+(v) = \{\phi \mid v\in V^+(\phi)\}$ to refer to constraints associated with a particular vertex. To prevent technical ambiguities, we further require that for each $v$, at least one of $\Phi^-(v)$ or $\Phi^+(v)$ is empty. Equivalently, $(\cup_{i=1}^K V^-(\phi)) \cap (\cup_{i=1}^K V^+(\phi)) = \emptyset$.
 
 Later in this section, we will show how to convert R and S constraints into O and C constraints. The following theorem then states that without loss of generality, every joint plan can be expressed in terms of its component plans with all timestamps removed. This fact will allow much of the planning to be done separately by agent, without knowing when and for how long they'll have to wait for one another.
 
@@ -150,7 +150,7 @@ Finally, make O constraints so that $x_{a(i,j)}$ is needed to open $v_{i,j}$. No
 To handle the undirected case, follow a similar construction, but use C constraints to block backtracking once a variable or its negation has been triggered. This effectively directs the graph as before.
 \end{proof}
 
-The above construction can be modified to have $|\phi^+| = |\phi^-| = 1$ and $|v^+ \cup v^-| \le 1$: simply replace the vertex corresponding to $x_i$ with a sequence of trigger nodes on a linear path, one for each clause containing $x_i$. Thus, even isolated constraints suffice to yield NP-completeness.
+The above construction can be modified to have $|V^-(\phi)| = |V^+(\phi)| = 1$ and $|\Phi^-(v) \cup \Phi^+(v)| \le 1$: simply replace the vertex corresponding to $x_i$ with a sequence of trigger nodes on a linear path, one for each clause containing $x_i$. Thus, even isolated constraints suffice to yield NP-completeness.
 
 On the other hand, if only O constraints appear \emph{and} the graph is undirected, then greedily opening doors while exploring the graph in flood-fill fashion will always lead to a solution if one exists. Nonetheless, we may examine hardness of approximation. By considering the case where a set of randomly scattered triggers must all be pressed to open the goal, we can view VOC planning as a generalization of the Metric Traveling Salesman Problem. Since the latter admits polynomial-time constant-factor approximations \cite{christofides1976worst}, we might expect to find the same here. The following theorem trashes such hopes.
 
@@ -162,8 +162,8 @@ Fix $\alpha < 1$. It is NP-hard to find an $\alpha ln(K)$-optimal VO-constrained
 \item All edges have zero or unit cost.
 \item All constraints have type O.
 \item The graph is undirected.
-\item $|\phi^+| = |\phi^-| = 1$ for all constraints $\phi$.
-\item $|v^+ \cup v^-| \le 1$ for all vertices $v$.
+\item $|V^-(\phi)| = |V^+(\phi)| = 1$ for all constraints $\phi$.
+\item $|\Phi^-(v) \cup \Phi^+(v)| \le 1$ for all vertices $v$.
 \end{itemize}
 \end{thm}
 

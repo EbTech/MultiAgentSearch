@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.9.1)  1 OCT 2015 11:58
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2014.9.1)  4 NOV 2015 17:02
 entering extended mode
  %&-line parsing enabled.
 **multiagent.tex
@@ -258,7 +258,21 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
 ]
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 76.
- [2]
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--83
+[]\OT1/ptm/m/n/10 More for-mally, a VO con-straint $\OML/cmm/m/it/10 ^^^ \OT1/c
+mr/m/n/10 =
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 82--83
+\OMS/cmsy/m/n/10 h\OML/cmm/m/it/10 V[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^^\OT1
+/cmr/m/n/10 )\OML/cmm/m/it/10 ; V[]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^^\OT1/cm
+r/m/n/10 )\OML/cmm/m/it/10 ; ^^\\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^^\OT1/cmr/m
+/n/10 )\OMS/cmsy/m/n/10 i$ \OT1/ptm/m/n/10 is de-scribed by two re-gions
+ []
+
+[2]
 LaTeX Font Info:    Font shape `OMS/ptm/m/it' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 138.
 
@@ -290,9 +304,13 @@ ML/cmm/m/it/10 ;  \OT1/cmr/m/n/10 (\OMS/cmsy/m/n/10 :\OML/cmm/m/it/10 x[]; \OMS
  []
 
 [3]
+Underfull \hbox (badness 4779) in paragraph at lines 153--154
+[]\OT1/ptm/m/n/10 The above con-struc-tion can be mod-i-fied to have
+ []
+
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 178.
- [4]
+[4]
 Overfull \hbox (53.37392pt too wide) in paragraph at lines 226--235
  [][] 
  []
@@ -307,7 +325,10 @@ Overfull \hbox (42.24406pt too wide) in paragraph at lines 256--265
  [][] 
  []
 
-[5]
+
+Underfull \vbox (badness 7133) has occurred while \output is active []
+
+ [5]
 Overfull \hbox (9.05328pt too wide) in paragraph at lines 284--284
 [] []\OT1/ptm/b/n/10 for all \OT1/ptm/m/n/10 tu-ples $\OT1/cmr/m/n/10 (\OML/cmm
 /m/it/10 hist[]; [] ; hist[]; hist[]; [] ; hist[]\OT1/cmr/m/n/10 )$
@@ -336,7 +357,7 @@ LaTeX Warning: There were multiply-defined labels.
 Here is how much of TeX's memory you used:
  2339 strings out of 493878
  28130 string characters out of 1153453
- 101064 words of memory out of 3000000
+ 103064 words of memory out of 3000000
  5584 multiletter control sequences out of 15000+50000
  20525 words of font info for 44 fonts, out of 3000000 for 9000
  694 hyphenation exceptions out of 8191
@@ -351,7 +372,7 @@ xmf-texlive/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive/
 fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texmf-texlive/fonts/type1/
 urw/times/utmb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb
 ></usr/share/texmf-texlive/fonts/type1/urw/times/utmri8a.pfb>
-Output written on multiagent.pdf (7 pages, 184533 bytes).
+Output written on multiagent.pdf (7 pages, 184718 bytes).
 PDF statistics:
  71 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
